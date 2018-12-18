@@ -100,7 +100,7 @@ class NSGRecord:
     def imp_nsg_attrs() -> list:
         """
         Returns list of NSG attrs implemented by the class
-        :return: list of NSG attr implemented
+        :return: list
         """
         return NSGRecord._nunsgateway_attr_list + [*NSGRecord._extended_attr_list]
 
