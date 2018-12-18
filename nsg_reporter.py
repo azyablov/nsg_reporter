@@ -168,6 +168,9 @@ if __name__ == '__main__':
     # Parsing arguments...
     main_logger.debug("Parsing arguments...")
     parser = argparse.ArgumentParser()
+    parser.add_argument('-v', help='VSD IP address or FQDN', action='append', required=True)
+    parser.add_argument('-l', help='user login [csproot rights]', action='append', default=['csproot'])
+    parser.add_argument('-p', help='csproot password', action='append', default=['csproot'])
     parser.add_argument('--csv', help='print report in stdout in CSV format', action='store_true')
     parser.add_argument('--xlsx', help='create report in XLSX format, file name should be provided', action='append')
     parser.add_argument('--show', help='show pretty text report in stdout', action='store_true')
@@ -179,8 +182,8 @@ if __name__ == '__main__':
     # Prints current API URL
     main_logger.debug('Current API URL: ' + api_base)
 
-    api_session = vspk.NUVSDSession(username='csproot', password='csproot', enterprise='csp',
-                                    api_url='https://vsd1a.nuage.cf:8443')
+    api_session = vspk.NUVSDSession(username=args.l[0], password=args.p[0], enterprise='csp',
+                                    api_url='https://' + args.v[0] + ':8443')
 
     # Actively connecting to the VSD API
     main_logger.debug("Actively connecting to the VSD API")
