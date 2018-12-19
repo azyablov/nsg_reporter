@@ -178,7 +178,7 @@ if __name__ == '__main__':
 
     # Disable exceptions related to incorrect SSL certificates
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-    api_base = nu_build_api_url('https://vsd1a.nuage.cf:8443')
+    api_base = nu_build_api_url('https://' + args.v[0] + ':8443')
     # Prints current API URL
     main_logger.debug('Current API URL: ' + api_base)
 
