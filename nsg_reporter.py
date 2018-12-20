@@ -51,9 +51,10 @@ class NSGRecord:
                 if self._state == 'EINIT':
                     nsg.fetch()
                     self._state = 'EFETCHED'
-                """if re.findall('date', name):
+                if re.findall('date', name):
                     st = eval('self.nsg.' + name)
-                    return time.ctime(st)"""
+                    pprint("Here should be epoch time:" + st)
+                    #return time.ctime(st)
                 return eval('self.nsg.' + name)
 
             if name in [*self._extended_attr_list]:
