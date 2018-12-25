@@ -1,5 +1,5 @@
 # Intro
-This script intended to generate report about NSG exists in Nuage VSD.
+This script intended to generate report about NSGs exists in Nuage VSD.
 API version is 5.0.
 Tested with Nuage 5.2.3_131.
 
