@@ -6,6 +6,7 @@ Tested with Nuage 5.2.3_131.
 # Installation
 
 git clone https://github.com/azyablov/nsg_reporter.git
+
 pip install -r requirements.txt
 
 # Usage
