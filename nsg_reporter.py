@@ -1,3 +1,13 @@
+###############################################################################
+#
+# nsg_reporter.py - A script that generates report for NSGs managed by Nuage VSD.
+#
+# Copyright 2018, Anton Zyablov, anton.zyablov@nokia.com
+#
+
+# Standard packages
+
+
 import vspk.v5_0 as vspk
 import vspk.utils as utils
 import requests
@@ -9,9 +19,13 @@ import time
 import re
 import xlsxwriter
 import argparse
+import sys
 
+__version__ = '1.0'
+__VERSION__ = __version__
 
 # Support classes
+
 
 class NSGRecord:
     """This class used to represent NSG object and related information for the purpose to build usage report."""
@@ -39,7 +53,6 @@ class NSGRecord:
     def __getattr__(self, name) -> object:
         if self._state == 'INIT' or self._state == 'FETCHED':
             if name in self._nunsgateway_attr_list:
-                print('i am here')
                 if self._state == 'INIT':
                     nsg.fetch()
                     self._state = 'FETCHED'
@@ -53,8 +66,16 @@ class NSGRecord:
                     self._state = 'EFETCHED'
                 if re.findall('date', name):
                     st = eval('self.nsg.' + name)
-                    pprint("Here should be epoch time:" + st)
-                    #return time.ctime(st)
+                    pprint("Here should be epoch time:" + str(st))
+                    if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
+                        # If we use macOS or linux
+                        # pprint(sys.platform)
+                        return time.ctime(st)
+                    else:
+                        # For win32 to be investigated how to transform ticks correctly
+                        # TODO: Refactor code to provide correct date translation from ticks
+                        # pprint(sys.platform)
+                        return eval('self.nsg.' + name)
                 return eval('self.nsg.' + name)
 
             if name in [*self._extended_attr_list]:
@@ -87,7 +108,7 @@ class NSGRecord:
 
     def csv(self) -> str:
         """
-        The function returns csv requence
+        The function returns csv sequence
         :return: str
         """
         str_res = []
@@ -121,8 +142,11 @@ class NSGRecord:
 # Support functions
 
 
-def fetch_child_objects(obj: object) -> list:
-    """ The function is fetching all child objects names. """
+def fetch_child_objects(obj: object):
+    """ The function is fetching all child objects names.
+    :param obj: Nuage object
+    :return nothing
+    """
 
     c_ents = obj.children_rest_names
     for c in c_ents:
@@ -131,14 +155,20 @@ def fetch_child_objects(obj: object) -> list:
 
 
 def nu_get_supported_api_versions(base_url: str) -> list:
-    """ The function requests all possible api versions and selects CURRENT one. """
+    """ The function requests all possible api versions and selects CURRENT one.
+    If something goes wrong empty list is returned.
+    :param base_url: URL string
+    :return list
+    """
 
     http_session = requests.session()
     http_resp = http_session.get(url=base_url, verify=False)
-
+    ver_supp = []
     if http_resp.ok:
         json_obj = http_resp.json()
-    ver_supp = []
+    else:
+        return ver_supp
+
     # Go throughout list of dicts and extract CURRENT versions
     for item in json_obj['versions']:
         if item['status'] == 'CURRENT':
@@ -168,7 +198,10 @@ if __name__ == '__main__':
 
     # Parsing arguments...
     main_logger.debug("Parsing arguments...")
-    parser = argparse.ArgumentParser()
+    argp_desc = sys.argv[0] + ' script connects to VSD to retrieve NSG objects and attributes and generate status '\
+                              'report for all enterprises in form of XLSX, CSV or just print it into console in ' \
+                              'as pretty text format'
+    parser = argparse.ArgumentParser(description=argp_desc)
     parser.add_argument('-v', help='VSD IP address or FQDN', action='append', required=True)
     parser.add_argument('-l', help='user login [csproot rights]', action='append', default=['csproot'])
     parser.add_argument('-p', help='csproot password', action='append', default=['csproot'])
@@ -202,7 +235,7 @@ if __name__ == '__main__':
 
     # Getting root
     api_user = api_session.user
-    main_logger.debug("Get api_user.")
+    main_logger.debug("Got api_user.")
     # List of NSGRecord objects
     nsg_records = []
 
