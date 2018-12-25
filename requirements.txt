@@ -1,0 +1,7 @@
+bambou==3.0.1
+decorator==4.1.2
+pexpect==4.3.0
+requests==2.21.0
+urllib3==1.24.1
+vspk==5.3.3
+XlsxWriter==1.1.2

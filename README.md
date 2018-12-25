@@ -3,6 +3,11 @@ This script intended to generate report about NSG exists in Nuage VSD.
 API version is 5.0.
 Tested with Nuage 5.2.3_131.
 
+# Installation
+
+git clone https://github.com/azyablov/nsg_reporter.git
+pip install -r requirements.txt
+
 # Usage
 usage: nsg_reporter.py [-h] -v V [-l L] [-p P] [--csv] [--xlsx XLSX] [--show]
 
